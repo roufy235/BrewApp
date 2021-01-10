@@ -1,20 +1,19 @@
 import 'package:brew_app/services/auth.dart';
 import 'package:flutter/material.dart';
 
-class SignIn extends StatefulWidget {
+class CreateAccount extends StatefulWidget {
   final Function toggleView;
 
-  SignIn({this.toggleView});
+  CreateAccount({this.toggleView});
 
   @override
-  _SignInState createState() => _SignInState();
+  _CreateAccountState createState() => _CreateAccountState();
 }
 
-class _SignInState extends State<SignIn> {
-  final AuthService _auth = AuthService();
-
+class _CreateAccountState extends State<CreateAccount> {
   final _formKey = GlobalKey<FormState>();
 
+  final AuthService _auth = AuthService();
   String _email = '';
   String _password = '';
   String _error = '';
@@ -22,11 +21,12 @@ class _SignInState extends State<SignIn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.brown[100],
       appBar: AppBar(
-        title: Text('Sign In'),
+        title: Text('Create Account'),
+        backgroundColor: Colors.brown[400],
         brightness: Brightness.dark,
         centerTitle: false,
-        backgroundColor: Colors.brown[400],
         elevation: 0.0,
         actions: [
           FlatButton.icon(
@@ -38,16 +38,15 @@ class _SignInState extends State<SignIn> {
                 color: Colors.white,
               ),
               label: Text(
-                'Create Account',
+                'Sign In',
                 style: TextStyle(color: Colors.white),
               ))
         ],
       ),
-      backgroundColor: Colors.brown[100],
       body: Container(
         padding: EdgeInsets.symmetric(horizontal: 50.0, vertical: 20.0),
         child: Form(
-          key: _formKey,
+          key: this._formKey,
           child: Column(
             children: [
               SizedBox(
@@ -75,7 +74,7 @@ class _SignInState extends State<SignIn> {
                   if (val.length > 6) {
                     return null;
                   }
-                  return 'At least 6 characters';
+                  return 'Enter a password 6+ characters long';
                 },
                 decoration: InputDecoration(hintText: 'Password'),
                 obscureText: true,
@@ -89,28 +88,31 @@ class _SignInState extends State<SignIn> {
               RaisedButton(
                 onPressed: () async {
                   if (this._formKey.currentState.validate()) {
-                    dynamic response = await this
+                    dynamic result = await this
                         ._auth
-                        .signInWithEmailAndPassword(
-                            this._email, this._password);
-                    if (response == null) {
-                      setState(() {
-                        this._error = 'Invalid email and password';
-                      });
+                        .registerWithEmailAndPassword(this._email, this._password);
+                    if(result == null) {
+                        setState(() {
+                          this._error = 'Please supply a valid email address';
+                        });
                     }
                   }
                 },
                 color: Colors.brown,
                 child: Text(
-                  'Sign In',
+                  'Create Account',
                   style: TextStyle(
                       fontWeight: FontWeight.bold, color: Colors.white),
                 ),
               ),
-              SizedBox(
-                height: 20.0,
+              SizedBox(height: 20.0,),
+              Text(
+                  this._error,
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 14.0
+                ),
               ),
-              Text(this._error),
             ],
           ),
         ),

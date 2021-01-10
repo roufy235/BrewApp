@@ -10,7 +10,9 @@ class Home extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.brown[50],
       appBar: AppBar(
-        title: Text('Brew App'),
+        title: Text(
+            'Brew App',
+        ),
         elevation: 0.0,
         centerTitle: false,
         brightness: Brightness.dark,
@@ -20,8 +22,8 @@ class Home extends StatelessWidget {
             onPressed: () async {
               await this._auth.signOut();
             },
-            label: Text('Logout'),
-            icon: Icon(Icons.person),
+            label: Text('Logout', style: TextStyle(color: Colors.white),),
+            icon: Icon(Icons.person, color: Colors.white,),
           )
         ],
       ),
