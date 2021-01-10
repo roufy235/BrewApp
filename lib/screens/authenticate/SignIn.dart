@@ -1,4 +1,5 @@
 import 'package:brew_app/services/auth.dart';
+import 'package:brew_app/shared/Loading.dart';
 import 'package:flutter/material.dart';
 
 class SignIn extends StatefulWidget {
@@ -18,6 +19,7 @@ class _SignInState extends State<SignIn> {
   String _email = '';
   String _password = '';
   String _error = '';
+  bool _loading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +46,7 @@ class _SignInState extends State<SignIn> {
         ],
       ),
       backgroundColor: Colors.brown[100],
-      body: Container(
+      body: this._loading ? Loading() : Container(
         padding: EdgeInsets.symmetric(horizontal: 50.0, vertical: 20.0),
         child: Form(
           key: _formKey,
@@ -54,6 +56,7 @@ class _SignInState extends State<SignIn> {
                 height: 20.0,
               ),
               TextFormField(
+                initialValue: this._email,
                 validator: (val) {
                   if (val.isNotEmpty) {
                     return null;
@@ -71,6 +74,7 @@ class _SignInState extends State<SignIn> {
                 height: 20.0,
               ),
               TextFormField(
+                initialValue: this._password,
                 validator: (val) {
                   if (val.length > 6) {
                     return null;
@@ -89,12 +93,16 @@ class _SignInState extends State<SignIn> {
               RaisedButton(
                 onPressed: () async {
                   if (this._formKey.currentState.validate()) {
+                    setState(() {
+                      this._loading = true;
+                    });
                     dynamic response = await this
                         ._auth
                         .signInWithEmailAndPassword(
-                            this._email, this._password);
+                        this._email, this._password);
                     if (response == null) {
                       setState(() {
+                        this._loading = false;
                         this._error = 'Invalid email and password';
                       });
                     }

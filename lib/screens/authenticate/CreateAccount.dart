@@ -1,4 +1,5 @@
 import 'package:brew_app/services/auth.dart';
+import 'package:brew_app/shared/Loading.dart';
 import 'package:flutter/material.dart';
 
 class CreateAccount extends StatefulWidget {
@@ -17,6 +18,7 @@ class _CreateAccountState extends State<CreateAccount> {
   String _email = '';
   String _password = '';
   String _error = '';
+  bool _loading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +45,7 @@ class _CreateAccountState extends State<CreateAccount> {
               ))
         ],
       ),
-      body: Container(
+      body: this._loading ? Loading() : Container(
         padding: EdgeInsets.symmetric(horizontal: 50.0, vertical: 20.0),
         child: Form(
           key: this._formKey,
@@ -53,6 +55,7 @@ class _CreateAccountState extends State<CreateAccount> {
                 height: 20.0,
               ),
               TextFormField(
+                initialValue: this._email,
                 validator: (val) {
                   if (val.isNotEmpty) {
                     return null;
@@ -70,6 +73,7 @@ class _CreateAccountState extends State<CreateAccount> {
                 height: 20.0,
               ),
               TextFormField(
+                initialValue: this._password,
                 validator: (val) {
                   if (val.length > 6) {
                     return null;
@@ -88,11 +92,15 @@ class _CreateAccountState extends State<CreateAccount> {
               RaisedButton(
                 onPressed: () async {
                   if (this._formKey.currentState.validate()) {
+                    setState(() {
+                      this._loading = true;
+                    });
                     dynamic result = await this
                         ._auth
                         .registerWithEmailAndPassword(this._email, this._password);
                     if(result == null) {
                         setState(() {
+                          this._loading = false;
                           this._error = 'Please supply a valid email address';
                         });
                     }
