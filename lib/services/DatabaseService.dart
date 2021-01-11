@@ -1,4 +1,5 @@
 import 'package:brew_app/models/BrewModel.dart';
+import 'package:brew_app/models/User.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DatabaseService {
@@ -15,6 +16,7 @@ class DatabaseService {
     });
   }
 
+
   // brew list from snapshot
   List<BrewModel> _brewsListFromSnapshot(QuerySnapshot snapshot) {
     return snapshot.documents.map((doc)  {
@@ -24,6 +26,17 @@ class DatabaseService {
           strength:doc.data['strength'] ?? 0
       );
     }).toList();
+  }
+
+  Stream<UserData> get getUserDoc {
+    return collectionRef.document(this.uid).snapshots().map((event) {
+      return UserData(
+        uid: this.uid,
+        name: event.data['name'] ?? '',
+        sugars: event.data['sugars'] ?? '',
+        strength: event.data['strength'] ?? 0,
+      );
+    });
   }
 
   Stream<List<BrewModel>> get notifyIfTheresChanged {
