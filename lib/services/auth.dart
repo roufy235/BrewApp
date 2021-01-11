@@ -23,7 +23,7 @@ class AuthService {
           .createUserWithEmailAndPassword(email: email, password: password);
       FirebaseUser user = result.user;
       await DatabaseService(uid: user.uid)
-          .updateUserData('sugars', 100, 'name');
+          .updateUserData('4', 100, 'name');
       return this._userFromFirebaseUser(user);
     } catch (e) {
       print(e.toString());

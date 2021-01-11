@@ -16,6 +16,7 @@ class _SettingsFormState extends State<SettingsForm> {
   String _currentName;
   String _currentSugar;
   int _currentStrength;
+  bool disableBtn = false;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +29,7 @@ class _SettingsFormState extends State<SettingsForm> {
         stream: DatabaseService(uid: user.uid).getUserDoc,
         builder: (context, snapshot) {
           if(snapshot.hasData) {
-            UserData user = snapshot.data;
+            UserData userData = snapshot.data;
 
             return Form(
               key: _formKey,
@@ -42,7 +43,7 @@ class _SettingsFormState extends State<SettingsForm> {
                     height: 20.0,
                   ),
                   TextFormField(
-                    initialValue: _currentName ?? user.name,
+                    initialValue: _currentName ?? userData.name,
                     validator: (val) {
                       return val.isNotEmpty ? null : 'Please enter a name';
                     },
@@ -57,7 +58,7 @@ class _SettingsFormState extends State<SettingsForm> {
                     height: 15.0,
                   ),
                   DropdownButtonFormField(
-                    value: this._currentSugar ?? user.sugars,
+                    value: this._currentSugar ?? userData.sugars,
                     onChanged: (val) {
                       setState(() {
                         this._currentSugar = val;
@@ -75,9 +76,9 @@ class _SettingsFormState extends State<SettingsForm> {
                     height: 15.0,
                   ),
                   Slider(
-                    value: (this._currentStrength ?? user.strength).toDouble(),
-                    activeColor: Colors.brown[this._currentStrength ?? user.strength],
-                    inactiveColor: Colors.brown[this._currentStrength ?? user.strength],
+                    value: (this._currentStrength ?? userData.strength).toDouble(),
+                    activeColor: Colors.brown[this._currentStrength ?? userData.strength],
+                    inactiveColor: Colors.brown[this._currentStrength ?? userData.strength],
                     min: 100,
                     max: 900,
                     divisions: 8,
@@ -92,8 +93,21 @@ class _SettingsFormState extends State<SettingsForm> {
                   ),
                   RaisedButton(
                     color: Colors.brown[400],
-                    onPressed: () async {
-                      if (_formKey.currentState.validate()) {}
+                    onPressed: this.disableBtn ? null : () async {
+                      if (_formKey.currentState.validate()) {
+                        setState(() {
+                          this.disableBtn = true;
+                        });
+                        await DatabaseService(uid: user.uid).updateUserData(
+                            this._currentSugar ?? userData.sugars,
+                            this._currentStrength ?? userData.strength,
+                            this._currentName ?? userData.name
+                        );
+                        setState(() {
+                          this.disableBtn = false;
+                        });
+                        Navigator.pop(context);
+                      }
                     },
                     child: Text(
                       'Update',
